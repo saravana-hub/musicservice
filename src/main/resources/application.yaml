@@ -1,0 +1,44 @@
+thirdParty:
+  client:
+    baseUrl:
+      musicbrainz: http://musicbrainz.org/ws/2/
+      wikidata: https://www.wikidata.org/wiki/Special:EntityData/
+      wikipedia: https://en.wikipedia.org/api/rest_v1/page/summary/
+      coverArt: http://coverartarchive.org/release-group/
+springdoc:
+  swagger-ui:
+    path: /musify/swagger-ui.html
+  api-docs:
+    path: /musify/api-docs
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - metrics
+          - prometheus
+          - health
+resilience4j.timelimiter:
+  instances:
+    artistDetails:
+      cancelRunningFuture: true
+      timeoutDuration: 15s
+resilience4j.circuitbreaker:
+  instances:
+    artistDetails:
+      slidingWindowSize: 10
+      slowCallDurationThreshold: 10s
+      permittedNumberOfCallsInHalfOpenState: 2
+      waitDurationInOpenState: 1s
+      minimumNumberOfCalls: 5
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+      recordExceptions:
+        - org.springframework.web.reactive.function.client.WebClientResponseException.ServiceUnavailable
+        - io.github.resilience4j.ratelimiter.RequestNotPermitted
+        - java.util.concurrent.TimeoutException
+      eventConsumerBufferSize: 20
+resilience4j.ratelimiter:
+  instances:
+    musicbrainz:
+      limitForPeriod: 1
+      limitRefreshPeriod: 1s

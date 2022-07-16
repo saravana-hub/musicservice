@@ -1,0 +1,5 @@
+.*
+**/out
+**/src
+!src/main/resources/application.yaml
+!build/libs/*
